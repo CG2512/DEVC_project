@@ -1,0 +1,57 @@
+mkdir workspace
+
+sudo apt update -y && sudo apt upgrade -y
+sudo apt install openjdk-21-jdk -y
+
+sudo apt install mysql-server -y
+sudo systemctl restart mysql.service
+
+sudo mysql_secure_installation
+
+sudo mysql
+CREATE USER 'bookservice'@'%' IDENTIFIED BY '1234';
+GRANT ALL PRIVILEGES ON *.* To 'bookservice'@'%' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+
+//Enable remote connection for mysql,change bind.address=0.0.0.0
+cd /etc/mysql/mysql.conf.d
+sudo nano /etc/mysql/mysql.conf.d/mysqld.cnf
+sudo systemctl daemon-reload
+sudo systemctl restart mysql.service
+
+
+java -jar bookService-0.1.jar
+
+sudo nano /etc/systemd/system/bookservice.service
+
+[Unit]
+Description=My Book Service Java REST Microservice
+[Service]
+User=ubuntu
+# The configuration file application.properties should be here:
+
+#change this to your workspace
+WorkingDirectory=/home/ubuntu/workspace/
+
+#path to executable. 
+#executable is a bash script which calls jar file
+ExecStart=/usr/bin/java -jar /home/ubuntu/workspace/bookService-0.1.jar
+
+SuccessExitStatus=143
+TimeoutStopSec=10
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+
+sudo systemctl daemon-reload
+sudo systemctl enable bookservice.service
+sudo systemctl start bookservice.service
+sudo systemctl status bookservice.service
+sudo systemctl restart bookservice.service
+
+II.When turning on machine again
+sudo systemctl restart mysql.service
+sudo systemctl start bookservice.service
+sudo systemctl status bookservice.service

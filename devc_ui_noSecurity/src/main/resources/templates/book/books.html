@@ -1,0 +1,33 @@
+<html layout:decorate="/template.html">
+<head>
+<title>Books</title>
+</head>
+<body>
+
+	<div layout:fragment="content">
+		<h1 class="mb-4">Book List</h1>
+		<!-- legacy code for Pagin on FE <div>
+			Page: <a th:href="@{/books?currentPage=0&size=10}">1</a> <a
+				th:href="@{/books?currentPage=1&size=10}">2</a> <a
+				th:href="@{/books?currentPage=2&size=10}">3</a>
+		</div> -->
+		<table border="1" class="table table-bordered">
+			<thead>
+				<tr>
+					<th>Book Name</th>
+					<th>Author</th>
+					<th>Review</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="book : ${books}">
+					<td th:text="${book.name}"></td>
+					<td th:text="${book.author.name}"></td>
+					<td><a th:href="@{/rating/ratings/{id}(id=${book.id})}"
+						class="btn btn-primary">View Review</a></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>

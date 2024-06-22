@@ -1,0 +1,42 @@
+<html layout:decorate="/template.html">
+<head>
+<title>Reviews</title>
+</head>
+
+<body>
+	<div layout:fragment="content">
+		<h1 class="mb-4">
+			Review List for <span th:text="${book.name}"></span>
+		</h1>
+		<!-- Legacy code for Paging on FE<div>
+			Page: <a
+				th:href="@{'/rating/ratings/'+${book.id}+'?currentPage=0&size=10'}">1</a>
+			<a
+				th:href="@{'/rating/ratings/'+${book.id}+'?currentPage=1&size=10'}">2</a>
+			<a
+				th:href="@{'/rating/ratings/'+${book.id}+'?currentPage=2&size=10'}">3</a>
+		</div> -->
+
+		<table border="1" class="table table-bordered">
+			<thead>
+				<tr>
+
+					<th>User</th>
+					<th>Review</th>
+					<th>Created At</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="rating : ${ratings}">
+					<td th:text="${rating.user.username}"></td>
+					<td th:text="${rating.review}"></td>
+					<td th:text="${#dates.format(rating.createdAt,'dd/MM/yyyy')}"></td>
+
+				</tr>
+			</tbody>
+		</table>
+
+			<a class="btn btn-primary my-2" th:href="@{'/rating/new/' + ${book.id}}">New rating</a>
+	</div>
+
+</body>

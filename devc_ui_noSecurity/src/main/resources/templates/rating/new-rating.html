@@ -1,0 +1,29 @@
+<html layout:decorate="/template.html">
+<head>
+<title>Reviews</title>
+</head>
+
+<body>
+	<div layout:fragment="content">
+		<form th:action="@{'/rating/new/' + ${book.id}}" method="post">
+			<div>
+				<label class="form-label" for=bookname>Book name</label> <input
+					class="form-control" readonly name="bookname"
+					th:value="${book.name}">
+			</div>
+			<!-- <div>
+				<label for=id class="form-lable">Book ID</label> <input readonly
+					name="id" th:value="${rating.book.name}" class="form-control">
+			</div> -->
+			<div>
+				<label for="commentArea" class="form-label">Post your review</label>
+				<textarea class="form-control" id="commentArea" rows="3" name=review
+					></textarea>
+			</div>
+			<button type="submit" class="btn btn-primary btn-block my-2">Submit</button>
+
+		</form>
+	</div>
+
+	</div>
+</body>

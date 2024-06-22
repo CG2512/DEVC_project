@@ -1,0 +1,66 @@
+mkdir workspace
+
+sudo apt update -y && sudo apt upgrade -y
+sudo apt install openjdk-21-jdk -y
+
+sudo apt install mariadb-server -y
+sudo systemctl enable mariadb
+sudo systemctl restart mariadb
+
+sudo mysql_secure_installation
+(there is no password for root)
+
+sudo mariadb
+CREATE USER 'ratingservice'@'%' IDENTIFIED BY '1234';
+GRANT ALL PRIVILEGES ON *.* To 'ratingservice'@'%' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+
+exit
+
+//Enable remote connection for mysql,change bind.address=0.0.0.0
+sudo nano /etc/mysql/mariadb.conf.d/50-server.cnf
+sudo systemctl daemon-reload
+sudo systemctl restart mariadb
+
+sudo mariadb
+CREATE DATABASE rating_service;
+exit
+
+mysql -u ratingservice -p rating_service < rating_service_rating.sql
+(delete COLLATE utf8mb4_0900_ai_ci in the sql before importing)
+
+java -jar ratingservice-0.1.jar
+
+sudo nano /etc/systemd/system/ratingservice.service
+
+[Unit]
+Description=My Rating Service Java REST Microservice
+[Service]
+User=ubuntu
+# The configuration file application.properties should be here:
+
+#change this to your workspace
+WorkingDirectory=/home/ubuntu/workspace/
+
+#path to executable. 
+#executable is a bash script which calls jar file
+ExecStart=/usr/bin/java -jar /home/ubuntu/workspace/ratingservice-0.1.jar
+
+SuccessExitStatus=143
+TimeoutStopSec=10
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+
+sudo systemctl daemon-reload
+sudo systemctl enable ratingservice.service
+sudo systemctl start ratingservice.service
+sudo systemctl status ratingservice.service
+sudo systemctl restart ratingservice.service
+
+II.When turning on devices again
+sudo systemctl start mariadb
+sudo systemctl start ratingservice.service
+sudo systemctl status ratingservice.service

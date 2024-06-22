@@ -1,0 +1,75 @@
+I.Install MySQL
+sudo apt update
+sudo apt install mysql-server
+sudo systemctl restart mysql.service
+
+sudo mysql
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root';
+exit
+
+sudo mysql_secure_installation
+Password leave as :'password'
+mysql -u root -p 
+password: root
+ALTER USER 'root'@'localhost' IDENTIFIED WITH auth_socket;
+
+mysql -u root -p
+CREATE USER 'ratingservice'@'%' IDENTIFIED BY '1234';
+GRANT ALL PRIVILEGES ON *.* To 'ratingservice'@'%' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+//Enable remote connection for mysql,change bind.address=0.0.0.0
+cd /etc/mysql/mysql.conf.d
+sudo nano /etc/mysql/mysql.conf.d/mysqld.cnf
+sudo systemctl daemon-reload
+sudo systemctl restart mysql.service
+//For mariaDB,conf file at this location
+sudo nano /etc/mysql/my.cnf
+sudo systemctl daemon-reload
+sudo systemctl restart mariadb
+III.Service for running Java
+1.Install Java 21
+sudo apt install openjdk-21-jdk -y
+2.Run Jar to test
+java -jar (filename).jar
+sudo nano /etc/systemd/system/bookservice.service
+3.Create .service file to deploy as service
+[Unit]
+Description=My User Service Java REST Microservice
+[Service]
+User=ubuntu
+# The configuration file application.properties should be here:
+
+#change this to your workspace
+WorkingDirectory=/home/ubuntu/workspace/
+
+#path to executable. 
+#executable is a bash script which calls jar file
+ExecStart=/usr/bin/java -jar /home/ubuntu/workspace/bookService-0.1.jar
+
+SuccessExitStatus=143
+TimeoutStopSec=10
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+
+#!/bin/sh
+sudo /usr/bin/java -jar userservice-0.1.jar server config.yml
+
+sudo systemctl daemon-reload
+sudo systemctl enable userservice.service
+sudo systemctl start userservice.service
+sudo systemctl status userservice.service
+sudo systemctl restart userservice.service
+
+sudo nano /etc/systemd/system/userservice.service
+sudo nano /etc/systemd/system/ratingservice.service
+
+
+sudo /usr/bin/java -jar /home/ubuntu/workspace/userservice-0.1.jar
+
+/home/ubuntu/workspace
+/home/ubuntu/workspace
+
+mysql -u ratingservice -p rating_service < rating_service_rating.sql
